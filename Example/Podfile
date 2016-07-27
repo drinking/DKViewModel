@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'DKViewModel_Example' do
+  pod 'DKViewModel', :path => '../'
+
+  target 'DKViewModel_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
