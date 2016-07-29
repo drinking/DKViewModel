@@ -1,0 +1,6 @@
+framework module DKViewModel {
+  umbrella header "DKViewModel-umbrella.h"
+
+  export *
+  module * { export * }
+}
