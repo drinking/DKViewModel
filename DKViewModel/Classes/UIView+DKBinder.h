@@ -7,4 +7,5 @@
 @interface UIView (DKBinder)
 
 @property(nonatomic, weak) id bindedVM;
+@property(nonatomic, strong, readonly) UIViewController *attachedController;
 @end

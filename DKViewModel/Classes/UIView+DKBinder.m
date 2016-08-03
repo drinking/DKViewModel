@@ -18,4 +18,13 @@
 
 }
 
+- (UIViewController *)attachedController {
+    UIResponder *top = self;
+    while (![top isKindOfClass:[UIViewController class]]) {
+        top = top.nextResponder;
+    }
+    return (UIViewController *) top;
+}
+
+
 @end
