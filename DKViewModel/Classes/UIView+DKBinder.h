@@ -2,7 +2,7 @@
 // Created by drinking on 16/7/28.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface UIView (DKBinder)
 

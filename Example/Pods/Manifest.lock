@@ -13,7 +13,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DKViewModel: 8b8ee905fff1a14b9257bd0f5fe6671f9c9f0433
+  DKViewModel: 16672ae87f342200a6bda1699cf387447c84b80a
   ReactiveCocoa: 5a42745f11ea236f405bb9ce5e97c5e3b23562dd
   Result: 18e1a7597fbcca5923c565b40a25a98afafdee02
 

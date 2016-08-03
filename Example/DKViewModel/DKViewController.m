@@ -10,6 +10,7 @@
 #import "DKViewController.h"
 //#import "LOHouseVideoViewModel.h"
 //#import "VodPlayerView+Binder.h"
+#import <DKViewModel/UIView+DKBinder.h>
 
 @interface DKViewController ()
 //@property(nonatomic, strong) LOHouseVideoViewModel *viewModel;
@@ -40,6 +41,7 @@
 
 - (void)initPlayerView {
     self.view.backgroundColor = [UIColor whiteColor];
+    self.view.attachedController;
 
 //    _playerView = [[VodPlayerView alloc] init];
 //    _playerView.useSystemRotion = YES;
