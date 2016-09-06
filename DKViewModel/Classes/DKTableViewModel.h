@@ -11,16 +11,28 @@
 
 @class RACSignal;
 
+
+typedef NS_ENUM(NSUInteger, DKRequestStatus) {
+    DKRNotStarted, DKRDataLoaded, DKRNoData, DKRNoMoreData, DKRError
+};
+
 @interface DKTableViewModel : DKViewModel
 
+@property(nonatomic, assign) DKRequestStatus status;
 @property(nonatomic, strong) NSArray *listData;
 @property(nonatomic, assign) NSInteger page;
 @property(nonatomic, assign) NSInteger perPage;
 
-- (RACSignal *)refresh;
+- (RACSignal *)rac_Refresh;
 
-- (RACSignal *)nextPage;
+- (RACSignal *)rac_NextPage;
 
-- (RACSignal *)loadPage:(NSInteger)pageNum;
+- (RACSignal *)rac_LoadPage:(NSInteger)pageNum;
+
+- (void)refresh;
+
+- (void)nextPage;
+
+- (void)loadPage:(NSInteger)pageNum;
 
 @end
