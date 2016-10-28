@@ -10,12 +10,11 @@
 
 
 - (id)bindedVM {
-    objc_getAssociatedObject(self, _cmd);
+    return objc_getAssociatedObject(self, _cmd);
 }
 
 - (void)setBindedVM:(id)bindedVM {
     objc_setAssociatedObject(self, @selector(bindedVM), bindedVM, OBJC_ASSOCIATION_ASSIGN);
-
 }
 
 - (UIViewController *)attachedController {
@@ -25,6 +24,5 @@
     }
     return (UIViewController *) top;
 }
-
 
 @end

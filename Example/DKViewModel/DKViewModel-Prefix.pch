@@ -13,5 +13,5 @@
 #ifdef __OBJC__
     @import UIKit;
     @import Foundation;
-#import <ReactiveCocoa/ReactiveCocoa.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 #endif

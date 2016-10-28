@@ -6,23 +6,28 @@
 //
 //
 
+#import "DKRACSubscriber.h"
 #import "DKViewModel.h"
 
 @implementation DKViewModel
 
-
-- (void)bind:(UIView *)view {
-    NSString *name = NSStringFromClass([view class]);
-    SEL sel = BINDSELECTOR(name);
-    NSLog(@"preparing to bind instance of %@", name);
-    if ([self respondsToSelector:sel]) {
-        NSLog(@"binding instance of %@", name);
-        [self performSelector:sel withObject:view];
-    } else {
-#ifdef DEBUG
-        NSAssert(NO, @"binding method not found for :%@", name);
-#endif
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _status = DKRNotStarted;
+        NSError *error = [[NSError alloc] initWithDomain:@"DKTableViewModel.refresh" code:404 userInfo:nil];
+        _rac_Refresh = [RACSignal error:error];
     }
 
+    return self;
 }
+
+- (id <RACSubscriber>)refreshSubscriber {
+    return [DKRACSubscriber subscriberWithNext:NULL error:NULL completed:NULL];
+}
+
+- (void)refresh {
+    [self.rac_Refresh subscribe:self.refreshSubscriber];
+}
+
 @end

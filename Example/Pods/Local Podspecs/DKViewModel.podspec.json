@@ -20,7 +20,7 @@
   },
   "source_files": "DKViewModel/Classes/**/*",
   "dependencies": {
-    "ReactiveCocoa": [
+    "ReactiveObjC": [
 
     ]
   }

@@ -8,12 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
-#ifndef BINDFOR
-#define BINDSELECTOR(className) NSSelectorFromString([NSString stringWithFormat:@"bindFor%@:",className])
-#define BINDFOR(__VMCLZ) \
-    - (void)bindFor##__VMCLZ:(__VMCLZ *)vm
-#endif
+typedef NS_ENUM(NSUInteger, DKRequestStatus) {
+    DKRNotStarted, DKRDataLoaded, DKRNoData, DKRNoMoreData, DKRError
+};
 
 @interface DKViewModel : NSObject
-- (void)bind:(UIView *)view;
+
+@property(nonatomic, assign) DKRequestStatus status;
+@property(nonatomic, strong, readonly) RACSignal *statusChangedSignal;
+@property(nonatomic, strong) RACSignal *rac_Refresh;
+@property(nonatomic, strong) id response;
+
+- (void)refresh;
+
 @end

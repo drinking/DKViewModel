@@ -7,32 +7,28 @@
 //
 
 #import "DKViewModel.h"
-#import <ReactiveCocoa/ReactiveCocoa.h>
 
-@class RACSignal;
+@class DKTableViewModel;
 
-
-typedef NS_ENUM(NSUInteger, DKRequestStatus) {
-    DKRNotStarted, DKRDataLoaded, DKRNoData, DKRNoMoreData, DKRError
-};
+typedef void (^DKRequestListBlock)(DKTableViewModel *instance, id <RACSubscriber> subscriber, NSInteger pageOffset);
 
 @interface DKTableViewModel : DKViewModel
 
-@property(nonatomic, assign) DKRequestStatus status;
 @property(nonatomic, strong) NSArray *listData;
 @property(nonatomic, assign) NSInteger page;
 @property(nonatomic, assign) NSInteger perPage;
+@property(nonatomic, copy) DKRequestListBlock requestBlock;
 
-- (RACSignal *)rac_Refresh;
+- (void)appendListData:(NSArray *)list;
 
 - (RACSignal *)rac_NextPage;
 
 - (RACSignal *)rac_LoadPage:(NSInteger)pageNum;
 
-- (void)refresh;
-
 - (void)nextPage;
 
 - (void)loadPage:(NSInteger)pageNum;
+
++ (instancetype)instanceWithRequestBlock:(DKRequestListBlock)block;
 
 @end

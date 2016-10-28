@@ -1,9 +1,7 @@
 PODS:
   - DKViewModel (0.1.0):
-    - ReactiveCocoa
-  - ReactiveCocoa (4.2.1):
-    - Result (~> 2.0)
-  - Result (2.1.3)
+    - ReactiveObjC
+  - ReactiveObjC (1.0.1)
 
 DEPENDENCIES:
   - DKViewModel (from `../`)
@@ -13,9 +11,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  DKViewModel: 16672ae87f342200a6bda1699cf387447c84b80a
-  ReactiveCocoa: 5a42745f11ea236f405bb9ce5e97c5e3b23562dd
-  Result: 18e1a7597fbcca5923c565b40a25a98afafdee02
+  DKViewModel: 6c7768fdcb4dab38444ba4c213dcce3378222900
+  ReactiveObjC: 0e618037d7b883b4cebcc8da203e8ed9b69ca2d3
 
 PODFILE CHECKSUM: 8abfb33f0f95d0a648ddb19970a3df9eecec94b9
 
