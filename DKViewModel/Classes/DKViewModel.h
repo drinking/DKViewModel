@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 
 typedef NS_ENUM(NSUInteger, DKRequestStatus) {
     DKRNotStarted, DKRDataLoaded, DKRNoData, DKRNoMoreData, DKRError

@@ -1,10 +1,12 @@
 PODS:
   - DKViewModel (0.1.0):
     - ReactiveObjC
+  - MJRefresh (3.1.12)
   - ReactiveObjC (1.0.1)
 
 DEPENDENCIES:
   - DKViewModel (from `../`)
+  - MJRefresh (~> 3.1.12)
 
 EXTERNAL SOURCES:
   DKViewModel:
@@ -12,8 +14,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   DKViewModel: 6c7768fdcb4dab38444ba4c213dcce3378222900
+  MJRefresh: b96cdb21c4aa75a7b07654311ab2f315c497e806
   ReactiveObjC: 0e618037d7b883b4cebcc8da203e8ed9b69ca2d3
 
-PODFILE CHECKSUM: 8abfb33f0f95d0a648ddb19970a3df9eecec94b9
+PODFILE CHECKSUM: 6c3b3fd9983d101fba016ea3574686a82c340cc4
 
 COCOAPODS: 1.0.1

@@ -7,6 +7,7 @@
 //
 
 #import "DKViewModel.h"
+#import <ReactiveObjC/ReactiveObjC.h>
 
 @class DKTableViewModel;
 
