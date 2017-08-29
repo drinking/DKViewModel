@@ -7,13 +7,13 @@
 //
 
 #import "DKViewController.h"
-#import <DKViewModel/DKTableViewModel.h>
+#import <DKViewModel/DKListViewModel.h>
 #import <MJRefresh/MJRefresh.h>
 
 @interface DKViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) DKTableViewModel *tableViewModel;
+@property(nonatomic, strong) DKListViewModel *tableViewModel;
 @property(nonatomic, strong) UILabel *textLabel;
 
 
@@ -26,7 +26,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _tableViewModel = [DKTableViewModel instanceWithRequestBlock:^(DKTableViewModel *instance,
+    _tableViewModel = [DKListViewModel instanceWithRequestBlock:^(DKListViewModel *instance,
             id <RACSubscriber> subscriber, NSInteger pageOffset) {
 
         //do some asynchronous request
@@ -84,7 +84,7 @@
     return [array copy];
 }
 
-- (void)bindView:(UITableView *)tableView withViewModel:(DKTableViewModel *)viewModel {
+- (void)bindView:(UITableView *)tableView withViewModel:(DKListViewModel *)viewModel {
 
     @weakify(self)
     [viewModel.statusChangedSignal subscribeNext:^(RACTuple *tuple) {

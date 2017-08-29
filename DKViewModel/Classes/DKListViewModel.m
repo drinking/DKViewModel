@@ -1,20 +1,20 @@
 //
-//  DKTableViewModel.m
+//  DKListViewModel.m
 //  Pods
 //
 //  Created by drinking on 16/7/27.
 //
 //
 
-#import "DKTableViewModel.h"
+#import "DKListViewModel.h"
 #import "DKRACSubscriber.h"
 
-@implementation DKTableViewModel {
+@implementation DKListViewModel {
     RACSignal *_statusChangedSignal;
 }
 
 + (instancetype)instanceWithRequestBlock:(DKRequestListBlock)block {
-    DKTableViewModel *viewModel = (DKTableViewModel *) [[self class] new];
+    DKListViewModel *viewModel = (DKListViewModel *) [[self class] new];
     viewModel.requestBlock = block;
     return viewModel;
 }

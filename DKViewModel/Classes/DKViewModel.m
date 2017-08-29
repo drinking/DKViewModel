@@ -15,7 +15,7 @@
     self = [super init];
     if (self) {
         _status = DKRNotStarted;
-        NSError *error = [[NSError alloc] initWithDomain:@"DKTableViewModel.refresh" code:404 userInfo:nil];
+        NSError *error = [[NSError alloc] initWithDomain:@"DKListViewModel.refresh" code:404 userInfo:nil];
         _rac_Refresh = [RACSignal error:error];
     }
 
