@@ -86,40 +86,40 @@
 
 - (void)bindView:(UITableView *)tableView withViewModel:(DKListViewModel *)viewModel {
 
-    @weakify(self)
-    [viewModel.statusChangedSignal subscribeNext:^(RACTuple *tuple) {
-        @strongify(self)
-        DKRequestStatus status = (DKRequestStatus) [tuple.first unsignedIntegerValue];
-        
-        [self.tableView.mj_header endRefreshing];
-        [self.tableView.mj_footer endRefreshing];
-        
-        
-        switch (status) {
-            case DKRNotStarted:
-                [self updateTableViewStatusText:@"Request not started"];
-                break;
-
-            case DKRDataLoaded:
-                self.tableView.tableFooterView.frame = CGRectZero;
-                [self.tableView reloadData];
-                break;
-
-            case DKRNoData:
-                [self updateTableViewStatusText:@"No Data!"];
-                break;
-
-            case DKRNoMoreData:
-                [self.tableView reloadData];
-                [self.tableView.mj_footer resetNoMoreData];
-                break;
-
-            case DKRError:
-                [self updateTableViewStatusText:@"Request Error!"];
-                break;
-        }
-
-    }];
+//    @weakify(self)
+//    [viewModel.statusChangedSignal subscribeNext:^(RACTuple *tuple) {
+//        @strongify(self)
+//        DKRequestStatus status = (DKRequestStatus) [tuple.first unsignedIntegerValue];
+//
+//        [self.tableView.mj_header endRefreshing];
+//        [self.tableView.mj_footer endRefreshing];
+//
+//
+//        switch (status) {
+//            case DKRNotStarted:
+//                [self updateTableViewStatusText:@"Request not started"];
+//                break;
+//
+//            case DKRDataLoaded:
+//                self.tableView.tableFooterView.frame = CGRectZero;
+//                [self.tableView reloadData];
+//                break;
+//
+//            case DKRNoData:
+//                [self updateTableViewStatusText:@"No Data!"];
+//                break;
+//
+//            case DKRNoMoreData:
+//                [self.tableView reloadData];
+//                [self.tableView.mj_footer resetNoMoreData];
+//                break;
+//
+//            case DKRError:
+//                [self updateTableViewStatusText:@"Request Error!"];
+//                break;
+//        }
+//
+//    }];
 
 }
 

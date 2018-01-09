@@ -43,7 +43,7 @@
                              dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
                                  noData:(void (^)())noDataBlock
                              noMoreData:(void (^)())noMoreDataBlock
-                                  error:(void (^)())errorBlock {
+                                  error:(void (^)(NSError *error))errorBlock {
     
     NSCParameterAssert(preProgressBlock != NULL);
     NSCParameterAssert(notStartedBlock != NULL);
