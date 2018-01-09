@@ -24,8 +24,14 @@
     if (self) {
         _page = 1;
         _perPage = 20;
+        @weakify(self)
+        [RACObserve(self, statusSubscriber) subscribeNext:^(id value) {
+            @strongify(self)
+            if(value){
+                [self subscribeStatusSignal];
+            }
+        }];
     }
-
     return self;
 }
 
@@ -46,9 +52,9 @@
     }];
 }
 
-- (RACSignal *)statusChangedSignal {
+- (void)subscribeStatusSignal {
+    @weakify(self)
     if (!_statusChangedSignal) {
-        @weakify(self)
         _statusChangedSignal = [RACObserve(self, status) map:^id(id value) {
             @strongify(self)
             if (self.status == DKRError) {
@@ -57,7 +63,32 @@
             return RACTuplePack(value, self.listData);
         }];
     }
-    return _statusChangedSignal;
+    
+    [_statusChangedSignal subscribeNext:^(RACTuple *tuple) {
+        @strongify(self)
+        [self.statusSubscriber sendPreProcess];
+        DKRequestStatus status = (DKRequestStatus)[tuple.first unsignedIntegerValue];
+        switch (status) {
+            case DKRNotStarted:{
+                [self.statusSubscriber sendNotStarted];
+            } break;
+            case DKRDataLoaded:{
+                [self.statusSubscriber sendLoaded:tuple.second];
+            } break;
+            case DKRNoData:{
+                [self.statusSubscriber sendNoData];
+            } break;
+            case DKRNoMoreData:{
+                [self.statusSubscriber sendNoMore];
+            } break;
+            case DKRError:{
+                [self.statusSubscriber sendError:nil];
+            } break;
+            default:
+                break;
+        }
+    }];
+    
 }
 
 - (void)appendListData:(NSArray *)list {

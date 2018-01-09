@@ -15,6 +15,12 @@
 @property (nonatomic, copy) void (^error)(NSError *error);
 @property (nonatomic, copy) void (^completed)(void);
 
+@property (nonatomic, copy) void (^preProcess)(void);
+@property (nonatomic, copy) void (^notStarted)(void);
+@property (nonatomic, copy) void (^loaded)(void);
+@property (nonatomic, copy) void (^noData)(void);
+@property (nonatomic, copy) void (^noMore)(void);
+
 @property (nonatomic, strong, readonly) RACCompoundDisposable *disposable;
 
 @end
@@ -32,6 +38,23 @@
     
     return subscriber;
 }
+
++ (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
+                              notStarted:(void (^)())notStartedBlock
+                              dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
+                                  noData:(void (^)())noDataBlock
+                              noMoreData:(void (^)())noMoreDataBlock
+                                   error:(void (^)(NSError *error))error {
+    DKRACSubscriber *subscriber = [[self alloc] init];
+    subscriber->_preProcess = [preProgressBlock copy];
+    subscriber->_notStarted = [notStartedBlock copy];
+    subscriber->_loaded = [dataLoadedBlock copy];
+    subscriber->_noData = [noDataBlock copy];
+    subscriber->_noMore = [noMoreDataBlock copy];
+    subscriber->_error = [error copy];
+    return subscriber;
+}
+
 
 - (id)init {
     self = [super init];
@@ -106,5 +129,45 @@
     }]];
 }
 
+
+- (void)sendPreProcess {
+    @synchronized (self) {
+        void (^preProcess)(void) = [self.preProcess copy];
+        if (preProcess == nil) return;
+        preProcess();
+    }
+}
+
+- (void)sendNotStarted {
+    @synchronized (self) {
+        void (^notStarted)(void) = [self.notStarted copy];
+        if (notStarted == nil) return;
+        notStarted();
+    }
+}
+
+- (void)sendLoaded:(id)value {
+    @synchronized (self) {
+        void (^loaded)(id) = [self.loaded copy];
+        if (loaded == nil) return;
+        loaded(value);
+    }
+}
+
+- (void)sendNoData {
+    @synchronized (self) {
+        void (^noData)(void) = [self.noData copy];
+        if (noData == nil) return;
+        noData();
+    }
+}
+
+- (void)sendNoMore {
+    @synchronized (self) {
+        void (^noMore)(void) = [self.noMore copy];
+        if (noMore == nil) return;
+        noMore();
+    }
+}
 
 @end
