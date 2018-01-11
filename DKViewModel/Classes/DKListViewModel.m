@@ -82,7 +82,7 @@
                 [self.statusSubscriber sendNoMore];
             } break;
             case DKRError:{
-                [self.statusSubscriber sendError:nil];
+                [self.statusSubscriber sendLoadError:nil];
             } break;
             default:
                 break;
