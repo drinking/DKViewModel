@@ -32,4 +32,6 @@
 
 - (void)sendNoMore;
 
+- (void)sendLoadError:(NSError *)value;
+
 @end

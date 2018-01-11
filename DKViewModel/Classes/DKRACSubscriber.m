@@ -20,6 +20,7 @@
 @property (nonatomic, copy) void (^loaded)(void);
 @property (nonatomic, copy) void (^noData)(void);
 @property (nonatomic, copy) void (^noMore)(void);
+@property (nonatomic, copy) void (^loadError)(NSError *error);
 
 @property (nonatomic, strong, readonly) RACCompoundDisposable *disposable;
 
@@ -51,7 +52,7 @@
     subscriber->_loaded = [dataLoadedBlock copy];
     subscriber->_noData = [noDataBlock copy];
     subscriber->_noMore = [noMoreDataBlock copy];
-    subscriber->_error = [error copy];
+    subscriber->_loadError = [error copy];
     return subscriber;
 }
 
@@ -69,6 +70,13 @@
             self.next = nil;
             self.error = nil;
             self.completed = nil;
+            self.preProcess = nil;
+            self.notStarted = nil;
+            self.loaded = nil;
+            self.noData = nil;
+            self.noMore = nil;
+            self.loadError = nil;
+            
         }
     }];
     
@@ -167,6 +175,14 @@
         void (^noMore)(void) = [self.noMore copy];
         if (noMore == nil) return;
         noMore();
+    }
+}
+
+- (void)sendLoadError:(NSError *)value {
+    @synchronized (self) {
+        void (^loadError)(id) = [self.loadError copy];
+        if (loadError == nil) return;
+        loadError(value);
     }
 }
 
