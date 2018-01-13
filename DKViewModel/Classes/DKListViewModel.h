@@ -30,6 +30,10 @@ typedef void (^DKRequestListBlock)(DKListViewModel *instance, id <RACSubscriber>
 
 - (void)loadPage:(NSInteger)pageNum;
 
+- (RACTuple *)calculateBetweenOldArray:(NSArray *)oldObjects
+                              newArray:(NSArray *)newObjects
+                          sectionIndex:(NSInteger)section;
+
 + (instancetype)instanceWithRequestBlock:(DKRequestListBlock)block;
 
 @end

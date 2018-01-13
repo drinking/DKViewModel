@@ -9,9 +9,12 @@
 #import "DKListViewModel.h"
 #import "DKRACSubscriber.h"
 
-@implementation DKListViewModel {
-    RACSignal *_statusChangedSignal;
-}
+@interface DKListViewModel()
+
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@end
+
+@implementation DKListViewModel 
 
 + (instancetype)instanceWithRequestBlock:(DKRequestListBlock)block {
     DKListViewModel *viewModel = (DKListViewModel *) [[self class] new];
@@ -24,13 +27,7 @@
     if (self) {
         _page = 1;
         _perPage = 20;
-        @weakify(self)
-        [RACObserve(self, statusSubscriber) subscribeNext:^(id value) {
-            @strongify(self)
-            if(value){
-                [self subscribeStatusSignal];
-            }
-        }];
+        self.semaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -47,52 +44,70 @@
         }
     }                                    error:^(NSError *error) {
         self.status = DKRError;
+        [self.statusSubscriber sendLoadError:error];
     }                                completed:^{
 
     }];
 }
 
-- (void)subscribeStatusSignal {
+- (void)setListData:(NSArray *)listData {
     @weakify(self)
-    if (!_statusChangedSignal) {
-        _statusChangedSignal = [RACObserve(self, status) map:^id(id value) {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        @strongify(self)
+        dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+        NSArray *oldArray = self.listData;
+        RACTuple *changes = [self calculateBetweenOldArray:oldArray newArray:listData sectionIndex:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
             @strongify(self)
-            if (self.status == DKRError) {
-                self.listData = @[];
+            if(self){
+                [self _setListData:listData];
+                [self.statusSubscriber sendLoadedListData:listData pathsToDelete:changes.first pathsToDelete:changes.second
+                                              pathsToMove:changes.third destinationPaths:changes.fourth];
+                dispatch_semaphore_signal(self.semaphore);
             }
-            return RACTuplePack(value, self.listData);
-        }];
+        });
+    });
+}
+
+// prevent retain cycle for setListDAta
+- (void)_setListData:(NSArray *)listData {
+    _listData = listData;
+}
+
+- (RACTuple *)calculateBetweenOldArray:(NSArray *)oldObjects
+                              newArray:(NSArray *)newObjects
+                          sectionIndex:(NSInteger)section {
+    
+    NSMutableArray *pathsToDelete = [NSMutableArray new];
+    NSMutableArray *pathsToInsert = [NSMutableArray new];
+    NSMutableArray *pathsToMove = [NSMutableArray new];
+    NSMutableArray *destinationPaths = [NSMutableArray new];
+    
+    // Deletes and moves
+    for (NSInteger oldIndex = 0; oldIndex < oldObjects.count; oldIndex++) {
+        NSObject *object = oldObjects[oldIndex];
+        NSInteger newIndex = [newObjects indexOfObject:object];
+        
+        if (newIndex == NSNotFound) {
+            [pathsToDelete addObject:[NSIndexPath indexPathForRow:oldIndex inSection:section]];
+        } else if (newIndex != oldIndex) {
+            [pathsToMove addObject:[NSIndexPath indexPathForRow:oldIndex inSection:section]];
+            [destinationPaths addObject:[NSIndexPath indexPathForRow:newIndex inSection:section]];
+        }
     }
     
-    [_statusChangedSignal subscribeNext:^(RACTuple *tuple) {
-        @strongify(self)
-        [self.statusSubscriber sendPreProcess];
-        DKRequestStatus status = (DKRequestStatus)[tuple.first unsignedIntegerValue];
-        switch (status) {
-            case DKRNotStarted:{
-                [self.statusSubscriber sendNotStarted];
-            } break;
-            case DKRDataLoaded:{
-                [self.statusSubscriber sendLoaded:tuple.second];
-            } break;
-            case DKRNoData:{
-                [self.statusSubscriber sendNoData];
-            } break;
-            case DKRNoMoreData:{
-                [self.statusSubscriber sendNoMore];
-            } break;
-            case DKRError:{
-                [self.statusSubscriber sendLoadError:nil];
-            } break;
-            default:
-                break;
+    // Inserts
+    for (NSInteger newIndex = 0; newIndex < newObjects.count; newIndex++) {
+        NSObject *object = newObjects[newIndex];
+        if (![oldObjects containsObject:object]) {
+            [pathsToInsert addObject:[NSIndexPath indexPathForRow:newIndex inSection:section]];
         }
-    }];
+    }
     
+    return RACTuplePack([pathsToDelete copy],[pathsToInsert copy],[pathsToMove copy],[destinationPaths copy]);
 }
 
 - (void)appendListData:(NSArray *)list {
-
     if (!self.listData || [self.listData count] == 0 || self.page == 1) {
         self.listData = list;
         return;
@@ -100,7 +115,6 @@
     NSMutableArray *arrays = [self.listData mutableCopy];
     [arrays addObjectsFromArray:list];
     self.listData = [arrays copy];
-
 }
 
 - (RACSignal *)rac_NextPage {

@@ -29,17 +29,7 @@ typedef NS_ENUM(NSUInteger, DKRequestStatus) {
 
 - (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
                              notStarted:(void (^)())notStartedBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                                 noData:(void (^)())noDataBlock
-                             noMoreData:(void (^)())noMoreDataBlock
+                             dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                   error:(void (^)(NSError *error))errorBlock;
 
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                                 noData:(void (^)())noDataBlock
-                                  error:(void (^)(NSError *error))errorBlock;
-
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                             noMoreData:(void (^)())noMoreDataBlock;
 @end

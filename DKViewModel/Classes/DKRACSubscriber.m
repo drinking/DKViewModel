@@ -18,8 +18,6 @@
 @property (nonatomic, copy) void (^preProcess)(void);
 @property (nonatomic, copy) void (^notStarted)(void);
 @property (nonatomic, copy) void (^loaded)(void);
-@property (nonatomic, copy) void (^noData)(void);
-@property (nonatomic, copy) void (^noMore)(void);
 @property (nonatomic, copy) void (^loadError)(NSError *error);
 
 @property (nonatomic, strong, readonly) RACCompoundDisposable *disposable;
@@ -42,16 +40,12 @@
 
 + (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
                               notStarted:(void (^)())notStartedBlock
-                              dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                                  noData:(void (^)())noDataBlock
-                              noMoreData:(void (^)())noMoreDataBlock
+                              dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                    error:(void (^)(NSError *error))error {
     DKRACSubscriber *subscriber = [[self alloc] init];
     subscriber->_preProcess = [preProgressBlock copy];
     subscriber->_notStarted = [notStartedBlock copy];
     subscriber->_loaded = [dataLoadedBlock copy];
-    subscriber->_noData = [noDataBlock copy];
-    subscriber->_noMore = [noMoreDataBlock copy];
     subscriber->_loadError = [error copy];
     return subscriber;
 }
@@ -73,8 +67,6 @@
             self.preProcess = nil;
             self.notStarted = nil;
             self.loaded = nil;
-            self.noData = nil;
-            self.noMore = nil;
             self.loadError = nil;
             
         }
@@ -139,42 +131,35 @@
 
 
 - (void)sendPreProcess {
-    @synchronized (self) {
-        void (^preProcess)(void) = [self.preProcess copy];
-        if (preProcess == nil) return;
-        preProcess();
-    }
+    void (^preProcess)(void) = [self.preProcess copy];
+    if (preProcess == nil) return;
+    preProcess();
 }
 
 - (void)sendNotStarted {
     @synchronized (self) {
         void (^notStarted)(void) = [self.notStarted copy];
         if (notStarted == nil) return;
+        if(self.preProcess){
+            self.preProcess();
+        }
         notStarted();
     }
 }
 
-- (void)sendLoaded:(id)value {
+- (void)sendLoadedListData:(NSArray *)listData
+             pathsToDelete:(NSArray *)pathsToDelete
+             pathsToDelete:(NSArray *)pathsToInsert
+               pathsToMove:(NSArray *)pathsToMove
+          destinationPaths:(NSArray *)destinationPaths {
+    
     @synchronized (self) {
-        void (^loaded)(id) = [self.loaded copy];
+        void (^loaded)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths) = [self.loaded copy];
         if (loaded == nil) return;
-        loaded(value);
-    }
-}
-
-- (void)sendNoData {
-    @synchronized (self) {
-        void (^noData)(void) = [self.noData copy];
-        if (noData == nil) return;
-        noData();
-    }
-}
-
-- (void)sendNoMore {
-    @synchronized (self) {
-        void (^noMore)(void) = [self.noMore copy];
-        if (noMore == nil) return;
-        noMore();
+        if(self.preProcess){
+            self.preProcess();
+        }
+        loaded(listData,pathsToDelete,pathsToInsert,pathsToMove,destinationPaths);
     }
 }
 
@@ -182,6 +167,9 @@
     @synchronized (self) {
         void (^loadError)(id) = [self.loadError copy];
         if (loadError == nil) return;
+        if(self.preProcess){
+            self.preProcess();
+        }
         loadError(value);
     }
 }

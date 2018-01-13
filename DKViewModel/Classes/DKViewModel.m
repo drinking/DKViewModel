@@ -38,64 +38,28 @@
 
 @implementation DKViewModel (Subscription)
 
+
 - (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
                              notStarted:(void (^)())notStartedBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                                 noData:(void (^)())noDataBlock
-                             noMoreData:(void (^)())noMoreDataBlock
+                             dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                   error:(void (^)(NSError *error))errorBlock {
     
     NSCParameterAssert(preProgressBlock != NULL);
     NSCParameterAssert(notStartedBlock != NULL);
     NSCParameterAssert(dataLoadedBlock != NULL);
-    NSCParameterAssert(noDataBlock != NULL);
-    NSCParameterAssert(noMoreDataBlock != NULL);
     NSCParameterAssert(errorBlock != NULL);
     
     self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:preProgressBlock
                                                            notStarted:notStartedBlock
                                                            dataLoaded:dataLoadedBlock
-                                                               noData:noDataBlock
-                                                           noMoreData:noMoreDataBlock
                                                                 error:errorBlock];
+    if(self.status == DKRNotStarted) {
+        notStartedBlock();
+    }
     
     return [self.statusSubscriber rac_deallocDisposable];
-}
-
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                                 noData:(void (^)())noDataBlock
-                                  error:(void (^)(NSError *error))errorBlock {
     
-    NSCParameterAssert(preProgressBlock != NULL);
-    NSCParameterAssert(dataLoadedBlock != NULL);
-    NSCParameterAssert(noDataBlock != NULL);
-    NSCParameterAssert(errorBlock != NULL);
     
-    self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:preProgressBlock
-                                                           notStarted:NULL
-                                                           dataLoaded:dataLoadedBlock
-                                                               noData:noDataBlock
-                                                           noMoreData:NULL
-                                                                error:errorBlock];
-    return [self.statusSubscriber rac_deallocDisposable];
-}
-
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                             noMoreData:(void (^)())noMoreDataBlock {
-    
-    NSCParameterAssert(preProgressBlock != NULL);
-    NSCParameterAssert(dataLoadedBlock != NULL);
-    NSCParameterAssert(noMoreDataBlock != NULL);
-    
-    self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:preProgressBlock
-                                                           notStarted:NULL
-                                                           dataLoaded:dataLoadedBlock
-                                                               noData:NULL
-                                                           noMoreData:noMoreDataBlock
-                                                                error:NULL];
-    return [self.statusSubscriber rac_deallocDisposable];
     
 }
 

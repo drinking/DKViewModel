@@ -16,21 +16,19 @@
 
 
 + (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
-                             notStarted:(void (^)())notStartedBlock
-                             dataLoaded:(void (^)(NSArray *list))dataLoadedBlock
-                                 noData:(void (^)())noDataBlock
-                             noMoreData:(void (^)())noMoreDataBlock
-                                   error:(void (^)(NSError *error))errorBlock;
+                              notStarted:(void (^)())notStartedBlock
+                              dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
+                                   error:(void (^)(NSError *error))error;
 
 - (void)sendPreProcess;
 
 - (void)sendNotStarted;
 
-- (void)sendLoaded:(id)value;
-
-- (void)sendNoData;
-
-- (void)sendNoMore;
+- (void)sendLoadedListData:(NSArray *)listData
+             pathsToDelete:(NSArray *)pathsToDelete
+             pathsToDelete:(NSArray *)pathsToInsert
+               pathsToMove:(NSArray *)pathsToMove
+          destinationPaths:(NSArray *)destinationPaths;
 
 - (void)sendLoadError:(NSError *)value;
 
