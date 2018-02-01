@@ -39,8 +39,8 @@
 @implementation DKViewModel (Subscription)
 
 
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             notStarted:(void (^)())notStartedBlock
+- (RACDisposable *)subscribePrePorgress:(void (^)(void))preProgressBlock
+                             notStarted:(void (^)(void))notStartedBlock
                              dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                   error:(void (^)(NSError *error))errorBlock {
     

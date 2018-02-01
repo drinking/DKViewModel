@@ -15,8 +15,8 @@
 
 
 
-+ (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
-                              notStarted:(void (^)())notStartedBlock
++ (instancetype)subscribeWithPrePorgress:(void (^)(void))preProgressBlock
+                              notStarted:(void (^)(void))notStartedBlock
                               dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                             simpleLoaded:(void (^)(NSArray *list))simpleLoaded
                                    error:(void (^)(NSError *error))error;

@@ -11,34 +11,36 @@
 
 ### 状态变更
 
-`DKRequestStatus`定义了列表的常见状态，通常为网络请求的状态。分别对应枚举`请求未开始`、`加载完成`、 `没有加载到数据`、 `没有更多数据`、 `请求出错`。
+`DKRequestStatus`定义了列表的常见状态，通常为网络请求的状态。分别对应枚举`请求未开始`、`加载完成`、 `请求出错`。
 
-通过RAC的方式订阅`StatusChangedSignal`来响应状态的变化。其中`请求未开始` 、`没有加载到数据` 、 `请求出错`的常见做法是展示相应的占位图。当接收到`加载完成`、 `没有更多数据`状态时，ViewModel中的`listData`已经完成填充列表数据，只需要reloadData即可完成列表cell的更新。
+通过订阅来响应状态的变化。其中`请求未开始`  、 `请求出错`的常见做法是展示相应的占位图。当接收到`加载完成`、 `没有更多数据`状态时，ViewModel中的`listData`已经完成填充列表数据，只需要reloadData即可完成列表cell的更新。`dataLoaded`提供了详细的数组变化情况，可以针对列表做局部变化，无需reload所有。
 
 ````objective-c
- [viewModel.statusChangedSignal subscribeNext:^(RACTuple *tuple) {
+     @weakify(self)
+    [viewModel subscribePrePorgress:^{
         @strongify(self)
-        DKRequestStatus status = (DKRequestStatus) [tuple.first unsignedIntegerValue];
         [self.tableView.mj_header endRefreshing];
         [self.tableView.mj_footer endRefreshing];
-   
-        switch (status) {
-            case DKRNotStarted:
-            case DKRNoData:
-            case DKRError:
-          		// update status view
-                break;
-            case DKRDataLoaded:
-                self.tableView.tableFooterView.frame = CGRectZero;
-                [self.tableView reloadData];
-                break;
-            case DKRNoMoreData:
-                [self.tableView reloadData];
-                [self.tableView.mj_footer resetNoMoreData];
-                break;
-        }
-
+    } notStarted:^{
+        @strongify(self)
+        [self updateTableViewStatusText:@"Request not started"];
+    } dataLoaded:^(NSArray *list, NSArray *pathsToDelete, NSArray *pathsToInsert, NSArray *pathsToMove, NSArray *destinationPaths) {
+        @strongify(self)
+        self.tableView.tableFooterView.frame = CGRectZero;
+        [self.tableView reloadData];
+    } error:^(NSError *error) {
+        @strongify(self)
+        [self updateTableViewStatusText:@"Request Error!"];
     }];
+````
+
+也可以使用简化版本，进行最基础的列表需求。
+````objective-c
+[viewModel subscribeDataLoaded:^(NSArray *list) {
+    do somthing 
+} error:^(NSError *error) {
+    do somthing        
+}]
 ````
 
 ### 下拉刷新和加载更多
@@ -87,3 +89,5 @@ drinking, pan49@126.com
 ## License
 
 DKViewModel is available under the MIT license. See the LICENSE file for more info.
+
+
