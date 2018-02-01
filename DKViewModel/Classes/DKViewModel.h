@@ -32,4 +32,7 @@ typedef NS_ENUM(NSUInteger, DKRequestStatus) {
                              dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                   error:(void (^)(NSError *error))errorBlock;
 
+- (RACDisposable *)subscribeDataLoaded:(void (^)(NSArray *list))dataLoadedBlock
+                                 error:(void (^)(NSError *error))errorBlock;
+
 @end

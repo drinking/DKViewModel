@@ -52,6 +52,7 @@
     self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:preProgressBlock
                                                            notStarted:notStartedBlock
                                                            dataLoaded:dataLoadedBlock
+                                                          simpleLoaded:NULL
                                                                 error:errorBlock];
     if(self.status == DKRNotStarted) {
         notStartedBlock();
@@ -62,5 +63,24 @@
     
     
 }
+
+- (RACDisposable *)subscribeDataLoaded:(void (^)(NSArray *list))dataLoadedBlock
+                                  error:(void (^)(NSError *error))errorBlock {
+    
+    NSCParameterAssert(dataLoadedBlock != NULL);
+    NSCParameterAssert(errorBlock != NULL);
+    
+    self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:NULL
+                                                           notStarted:NULL
+                                                           dataLoaded:NULL
+                                                         simpleLoaded:dataLoadedBlock
+                                                                error:errorBlock];
+    
+    return [self.statusSubscriber rac_deallocDisposable];
+    
+    
+    
+}
+
 
 @end

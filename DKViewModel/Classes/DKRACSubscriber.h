@@ -18,6 +18,7 @@
 + (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
                               notStarted:(void (^)())notStartedBlock
                               dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
+                            simpleLoaded:(void (^)(NSArray *list))simpleLoaded
                                    error:(void (^)(NSError *error))error;
 
 - (void)sendPreProcess;
@@ -29,6 +30,8 @@
              pathsToDelete:(NSArray *)pathsToInsert
                pathsToMove:(NSArray *)pathsToMove
           destinationPaths:(NSArray *)destinationPaths;
+
+- (void)sendSimpleLoaded:(NSArray *)listData;
 
 - (void)sendLoadError:(NSError *)value;
 

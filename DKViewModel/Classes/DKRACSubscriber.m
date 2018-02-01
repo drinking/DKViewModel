@@ -18,6 +18,7 @@
 @property (nonatomic, copy) void (^preProcess)(void);
 @property (nonatomic, copy) void (^notStarted)(void);
 @property (nonatomic, copy) void (^loaded)(void);
+@property (nonatomic, copy) void (^simpleLoaded)(void);
 @property (nonatomic, copy) void (^loadError)(NSError *error);
 
 @property (nonatomic, strong, readonly) RACCompoundDisposable *disposable;
@@ -41,11 +42,13 @@
 + (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
                               notStarted:(void (^)())notStartedBlock
                               dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
+                                   simpleLoaded:(void (^)(NSArray *list))simpleLoaded
                                    error:(void (^)(NSError *error))error {
     DKRACSubscriber *subscriber = [[self alloc] init];
     subscriber->_preProcess = [preProgressBlock copy];
     subscriber->_notStarted = [notStartedBlock copy];
     subscriber->_loaded = [dataLoadedBlock copy];
+    subscriber->_simpleLoaded = [simpleLoaded copy];
     subscriber->_loadError = [error copy];
     return subscriber;
 }
@@ -160,6 +163,17 @@
             self.preProcess();
         }
         loaded(listData,pathsToDelete,pathsToInsert,pathsToMove,destinationPaths);
+    }
+}
+
+- (void)sendSimpleLoaded:(NSArray *)listData {
+    @synchronized (self) {
+        void (^loaded)(NSArray *list) = [self.simpleLoaded copy];
+        if (loaded == nil) return;
+        if(self.preProcess){
+            self.preProcess();
+        }
+        loaded(listData);
     }
 }
 

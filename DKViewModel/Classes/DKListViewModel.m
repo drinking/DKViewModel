@@ -63,6 +63,7 @@
                 [self _setListData:listData];
                 [self.statusSubscriber sendLoadedListData:listData pathsToDelete:changes.first pathsToDelete:changes.second
                                               pathsToMove:changes.third destinationPaths:changes.fourth];
+                [self.statusSubscriber sendSimpleLoaded:listData];
                 dispatch_semaphore_signal(self.semaphore);
             }
         });
