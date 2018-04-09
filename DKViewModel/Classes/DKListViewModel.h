@@ -19,12 +19,9 @@ typedef void (^DKRequestListBlock)(DKListViewModel *instance, id <RACSubscriber>
 @property(nonatomic, assign) NSInteger page;
 @property(nonatomic, assign) NSInteger perPage;
 @property(nonatomic, copy) DKRequestListBlock requestBlock;
+@property(nonatomic, strong,readonly) RACSignal *executing;
 
 - (void)appendListData:(NSArray *)list;
-
-- (RACSignal *)rac_NextPage;
-
-- (RACSignal *)rac_LoadPage:(NSInteger)pageNum;
 
 - (void)nextPage;
 

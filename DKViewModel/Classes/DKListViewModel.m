@@ -12,6 +12,7 @@
 @interface DKListViewModel()
 
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@property (nonatomic, strong) RACCommand *requestCommand;
 @end
 
 @implementation DKListViewModel 
@@ -60,7 +61,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             @strongify(self)
             if(self){
-                [self _setListData:listData];
+                self->_listData = listData;
                 [self.statusSubscriber sendLoadedListData:listData pathsToDelete:changes.first pathsToDelete:changes.second
                                               pathsToMove:changes.third destinationPaths:changes.fourth];
                 [self.statusSubscriber sendSimpleLoaded:listData];
@@ -68,11 +69,6 @@
             }
         });
     });
-}
-
-// prevent retain cycle for setListDAta
-- (void)_setListData:(NSArray *)listData {
-    _listData = listData;
 }
 
 - (RACTuple *)calculateBetweenOldArray:(NSArray *)oldObjects
@@ -109,7 +105,7 @@
 }
 
 - (void)appendListData:(NSArray *)list {
-    if (!self.listData || [self.listData count] == 0 || self.page == 1) {
+    if (!self.listData || [self.listData count] == 0) {
         self.listData = list;
         return;
     }
@@ -118,46 +114,50 @@
     self.listData = [arrays copy];
 }
 
-- (RACSignal *)rac_NextPage {
-    return [[self rac_LoadPage:self.page + 1] doNext:^(id x) {
-        self.page += 1;
-    }];
-}
-
-- (void)nextPage {
-    [[self rac_NextPage] subscribe:self.loadPageSubscriber];
-}
-
-- (RACSignal *)rac_LoadPage:(NSInteger)pageNum {
-
-    if (self.requestBlock) {
+- (RACCommand *)requestCommand {
+    if(self.requestBlock && !_requestCommand) {
         @weakify(self)
-        return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
-            @strongify(self)
-            self.requestBlock(self, subscriber, (pageNum - 1) * self.perPage);
-            return nil;
+        _requestCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal * (NSNumber *pageNum) {
+            return [[RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
+                @strongify(self)
+                self.requestBlock(self, subscriber, ([pageNum integerValue] - 1) * self.perPage);
+                return nil;
+            }] doNext:^(id x) {
+                @strongify(self)
+                if(self.page == 1) {
+                    self->_listData = @[];
+                }
+                self.page += 1;
+            }];
         }];
     }
+    return _requestCommand;
+}
 
-    return nil;
+- (RACSignal *)executing {
+    return self.requestCommand.executing;
 }
 
 - (id <RACSubscriber>)loadPageSubscriber {
     return [self refreshSubscriber];
 }
 
+- (void)nextPage {
+    [[self.requestCommand execute:@(self.page)] subscribe:self.loadPageSubscriber];
+}
+
 - (void)loadPage:(NSInteger)pageNum {
-    [[self rac_LoadPage:pageNum] subscribe:self.loadPageSubscriber];
+    self.page = pageNum;
+    [[self.requestCommand execute:@(pageNum)] subscribe:self.loadPageSubscriber];
 }
 
 - (void)refresh {
-    self.page = 1;
-    [self loadPage:self.page];
+    [self loadPage:1];
 }
 
-- (RACSignal *)rac_Refresh {
+- (RACCommand *)rac_Refresh {
     self.page = 1;
-    return [self rac_LoadPage:self.page];
+    return self.requestCommand;
 }
 
 @end
