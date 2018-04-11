@@ -6,11 +6,11 @@
 //
 //
 
-#import "DKRACSubscriber.h"
+#import "DKSubscriber.h"
 #import "DKViewModel.h"
 
 @interface DKViewModel()
-@property(nonatomic, strong,readwrite) DKRACSubscriber *statusSubscriber;
+@property(nonatomic, strong,readwrite) DKSubscriber *statusSubscriber;
 @end
 
 @implementation DKViewModel
@@ -25,7 +25,7 @@
 }
 
 - (id <RACSubscriber>)refreshSubscriber {
-    return [DKRACSubscriber subscriberWithNext:NULL error:NULL completed:NULL];
+    return [DKSubscriber subscriberWithNext:NULL error:NULL completed:NULL];
 }
 
 - (void)refresh {
@@ -48,7 +48,7 @@
     NSCParameterAssert(dataLoadedBlock != NULL);
     NSCParameterAssert(errorBlock != NULL);
     
-    self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:preProgressBlock
+    self.statusSubscriber = [DKSubscriber subscribeWithPrePorgress:preProgressBlock
                                                            notStarted:notStartedBlock
                                                            dataLoaded:dataLoadedBlock
                                                           simpleLoaded:NULL
@@ -67,7 +67,7 @@
     NSCParameterAssert(dataLoadedBlock != NULL);
     NSCParameterAssert(errorBlock != NULL);
     
-    self.statusSubscriber = [DKRACSubscriber subscribeWithPrePorgress:NULL
+    self.statusSubscriber = [DKSubscriber subscribeWithPrePorgress:NULL
                                                            notStarted:NULL
                                                            dataLoaded:NULL
                                                          simpleLoaded:dataLoadedBlock

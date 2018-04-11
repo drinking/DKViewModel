@@ -6,9 +6,9 @@
 //  Copyright © 2016年 Bill Xie. All rights reserved.
 //
 
-#import "DKRACSubscriber.h"
+#import "DKSubscriber.h"
 
-@interface DKRACSubscriber ()
+@interface DKSubscriber ()
 
 // These callbacks should only be accessed while synchronized on self.
 @property (nonatomic, copy) void (^next)(id value);
@@ -25,12 +25,12 @@
 
 @end
 
-@implementation DKRACSubscriber
+@implementation DKSubscriber
 
 #pragma mark Lifecycle
 
 + (instancetype)subscriberWithNext:(void (^)(id x))next error:(void (^)(NSError *error))error completed:(void (^)(void))completed {
-    DKRACSubscriber *subscriber = [[self alloc] init];
+    DKSubscriber *subscriber = [[self alloc] init];
     
     subscriber->_next = [next copy];
     subscriber->_error = [error copy];
@@ -39,12 +39,12 @@
     return subscriber;
 }
 
-+ (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
-                              notStarted:(void (^)())notStartedBlock
++ (instancetype)subscribeWithPrePorgress:(void (^)(void))preProgressBlock
+                              notStarted:(void (^)(void))notStartedBlock
                               dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                    simpleLoaded:(void (^)(NSArray *list))simpleLoaded
                                    error:(void (^)(NSError *error))error {
-    DKRACSubscriber *subscriber = [[self alloc] init];
+    DKSubscriber *subscriber = [[self alloc] init];
     subscriber->_preProcess = [preProgressBlock copy];
     subscriber->_notStarted = [notStartedBlock copy];
     subscriber->_loaded = [dataLoadedBlock copy];

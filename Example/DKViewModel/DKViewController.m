@@ -31,7 +31,6 @@
 
         //do some asynchronous request
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
             if (pageOffset<40){
                 BOOL hasMore = YES;
                 [subscriber sendNext:RACTuplePack([self createStringArray:pageOffset], @(hasMore))];
@@ -39,10 +38,7 @@
                 BOOL hasMore = NO;
                 [subscriber sendNext:RACTuplePack(@[], @(hasMore))];
             }
-            
         });
-        
-
     }];
 
     _tableView = [UITableView new];
@@ -64,8 +60,27 @@
         [self.tableViewModel nextPage];
     }];
     
-    [self.tableView.mj_header beginRefreshing];
+//    [self.tableView.mj_header beginRefreshing];
     
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    
+    NSInteger total = 0;
+    while (total<1000) {
+        int delay = arc4random()%4;
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSMutableArray *list = [@[] mutableCopy];
+            NSString *content = [NSString stringWithFormat:@"Round %@ Value%@",@(total),[@(0) stringValue]];
+            [list addObject:content];
+            [list addObjectsFromArray:self.tableViewModel.listData?:@[]];
+            self.tableViewModel.listData = [list copy];
+//        });
+        total+=1;
+    }
 }
 
 - (void)updateTableViewStatusText:(NSString *)text {
@@ -97,7 +112,17 @@
     } dataLoaded:^(NSArray *list, NSArray *pathsToDelete, NSArray *pathsToInsert, NSArray *pathsToMove, NSArray *destinationPaths) {
         @strongify(self)
         self.tableView.tableFooterView.frame = CGRectZero;
-        [self.tableView reloadData];
+        
+        [self.tableView beginUpdates];
+        [self.tableView insertRowsAtIndexPaths:pathsToInsert withRowAnimation:UITableViewRowAnimationNone];
+        [self.tableView deleteRowsAtIndexPaths:pathsToDelete withRowAnimation:UITableViewRowAnimationNone];
+        [pathsToMove enumerateObjectsUsingBlock:^(id pathToMove, NSUInteger idx, BOOL *stop) {
+            [self.tableView moveRowAtIndexPath:pathToMove toIndexPath:destinationPaths[idx]];
+        }];
+        [self.tableView endUpdates];
+
+        
+        
     } error:^(NSError *error) {
         @strongify(self)
         [self updateTableViewStatusText:@"Request Error!"];

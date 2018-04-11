@@ -9,14 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
-@interface DKRACSubscriber : NSObject<RACSubscriber>
+@interface DKSubscriber : NSObject<RACSubscriber>
 
 + (instancetype)subscriberWithNext:(void (^)(id x))next error:(void (^)(NSError *error))error completed:(void (^)(void))completed;
 
 
 
-+ (instancetype)subscribeWithPrePorgress:(void (^)())preProgressBlock
-                              notStarted:(void (^)())notStartedBlock
++ (instancetype)subscribeWithPrePorgress:(void (^)(void))preProgressBlock
+                              notStarted:(void (^)(void))notStartedBlock
                               dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                             simpleLoaded:(void (^)(NSArray *list))simpleLoaded
                                    error:(void (^)(NSError *error))error;

@@ -7,15 +7,21 @@
 //
 
 #import "DKListViewModel.h"
-#import "DKRACSubscriber.h"
+#import "DKSubscriber.h"
 
 @interface DKListViewModel()
 
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@property(nonatomic, strong) NSOperationQueue *operationQueue;
+@property(nonatomic, strong) NSMutableArray<NSOperation *>* updateUIOperations;
 @property (nonatomic, strong) RACCommand *requestCommand;
+@property (nonatomic, assign) NSInteger bgCount;
+@property (nonatomic, assign) NSInteger uiCount;
 @end
 
-@implementation DKListViewModel 
+@implementation DKListViewModel {
+    NSArray *_originList;
+}
 
 + (instancetype)instanceWithRequestBlock:(DKRequestListBlock)block {
     DKListViewModel *viewModel = (DKListViewModel *) [[self class] new];
@@ -29,12 +35,14 @@
         _page = 1;
         _perPage = 20;
         self.semaphore = dispatch_semaphore_create(1);
+        self.operationQueue = [NSOperationQueue new];
+        self.updateUIOperations = [NSMutableArray new];
     }
     return self;
 }
 
 - (id <RACSubscriber>)refreshSubscriber {
-    return [DKRACSubscriber subscriberWithNext:^(RACTuple *tuple) {
+    return [DKSubscriber subscriberWithNext:^(RACTuple *tuple) {
         NSAssert(tuple.count == 2, @"Tuple must contain two values (array,hasMore)");
         [self appendListData:tuple.first];
         if ([self.listData count] == 0) {
@@ -52,23 +60,46 @@
 }
 
 - (void)setListData:(NSArray *)listData {
+    
+    if (self->_originList == nil) {
+        self->_originList = self.listData?:@[];
+    }else {
+        [self.operationQueue cancelAllOperations];
+        // 位置很重要 -->> 这里就不行了
+    }
+    
+    
+    self->_listData = listData;
+    [self.statusSubscriber sendSimpleLoaded:listData];
+    
     @weakify(self)
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    [self.operationQueue addOperationWithBlock:^{
         @strongify(self)
-        dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-        NSArray *oldArray = self.listData;
-        RACTuple *changes = [self calculateBetweenOldArray:oldArray newArray:listData sectionIndex:0];
-        dispatch_async(dispatch_get_main_queue(), ^{
+        RACTuple *changes = [self calculateBetweenOldArray:self->_originList newArray:listData sectionIndex:0];
+        
+        self.bgCount += 1;
+        NSLog(@"Backgroud Operation executing %@...",@(self.bgCount));
+        
+        NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
             @strongify(self)
-            if(self){
-                self->_listData = listData;
-                [self.statusSubscriber sendLoadedListData:listData pathsToDelete:changes.first pathsToDelete:changes.second
-                                              pathsToMove:changes.third destinationPaths:changes.fourth];
-                [self.statusSubscriber sendSimpleLoaded:listData];
-                dispatch_semaphore_signal(self.semaphore);
+            self.uiCount+=1;
+            NSLog(@"UI Operation executing %@...",@(self.uiCount));
+            if([self.listData count] != [listData count]) {
+                //校验
+                return;
             }
-        });
-    });
+            self->_originList = nil;
+            [self.statusSubscriber sendLoadedListData:self->_listData pathsToDelete:changes.first pathsToDelete:changes.second
+                                          pathsToMove:changes.third destinationPaths:changes.fourth];
+        }];
+        
+        // <<--见前面 位置很重要 放在主线程和这里效率差很多
+        [self.updateUIOperations makeObjectsPerformSelector:@selector(cancel)];
+        [self.updateUIOperations removeAllObjects];
+        [[NSOperationQueue mainQueue] addOperation:op];
+        [self.updateUIOperations addObject:op];
+    }];
+    
 }
 
 - (RACTuple *)calculateBetweenOldArray:(NSArray *)oldObjects
@@ -130,6 +161,7 @@
                 self.page += 1;
             }];
         }];
+        
     }
     return _requestCommand;
 }

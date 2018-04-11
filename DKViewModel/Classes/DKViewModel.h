@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <ReactiveObjC/ReactiveObjC.h>
-#import "DKRACSubscriber.h"
+#import "DKSubscriber.h"
 
 typedef NS_ENUM(NSUInteger, DKRequestStatus) {
     DKRNotStarted,
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, DKRequestStatus) {
 
 @interface DKViewModel : NSObject
 
-@property(nonatomic, strong,readonly) DKRACSubscriber *statusSubscriber;
+@property(nonatomic, strong,readonly) DKSubscriber *statusSubscriber;
 @property(nonatomic, assign) DKRequestStatus status;
 @property(nonatomic, strong) RACCommand *rac_Refresh;
 @property(nonatomic, strong) id response;
