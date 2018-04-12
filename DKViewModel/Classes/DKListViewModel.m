@@ -15,8 +15,6 @@
 @property(nonatomic, strong) NSOperationQueue *operationQueue;
 @property(nonatomic, strong) NSMutableArray<NSOperation *>* updateUIOperations;
 @property (nonatomic, strong) RACCommand *requestCommand;
-@property (nonatomic, assign) NSInteger bgCount;
-@property (nonatomic, assign) NSInteger uiCount;
 @end
 
 @implementation DKListViewModel {
@@ -65,25 +63,18 @@
         self->_originList = self.listData?:@[];
     }else {
         [self.operationQueue cancelAllOperations];
-        // 位置很重要 -->> 这里就不行了
     }
-    
-    
+
     self->_listData = listData;
     [self.statusSubscriber sendSimpleLoaded:listData];
     
     @weakify(self)
     [self.operationQueue addOperationWithBlock:^{
         @strongify(self)
+        NSLog(@"background thread operating...");
         RACTuple *changes = [self calculateBetweenOldArray:self->_originList newArray:listData sectionIndex:0];
-        
-        self.bgCount += 1;
-        NSLog(@"Backgroud Operation executing %@...",@(self.bgCount));
-        
         NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
             @strongify(self)
-            self.uiCount+=1;
-            NSLog(@"UI Operation executing %@...",@(self.uiCount));
             if([self.listData count] != [listData count]) {
                 //校验
                 return;
@@ -91,13 +82,19 @@
             self->_originList = nil;
             [self.statusSubscriber sendLoadedListData:self->_listData pathsToDelete:changes.first pathsToDelete:changes.second
                                           pathsToMove:changes.third destinationPaths:changes.fourth];
+            NSLog(@"main thread operating...");
         }];
         
-        // <<--见前面 位置很重要 放在主线程和这里效率差很多
-        [self.updateUIOperations makeObjectsPerformSelector:@selector(cancel)];
-        [self.updateUIOperations removeAllObjects];
+        //防止同时操作数组
+        dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+        if([self.updateUIOperations count]>0){
+            [self.updateUIOperations makeObjectsPerformSelector:@selector(cancel)];
+            [self.updateUIOperations removeAllObjects];
+        }
         [[NSOperationQueue mainQueue] addOperation:op];
         [self.updateUIOperations addObject:op];
+        dispatch_semaphore_signal(self.semaphore);
+        
     }];
     
 }
@@ -136,7 +133,7 @@
 }
 
 - (void)appendListData:(NSArray *)list {
-    if (!self.listData || [self.listData count] == 0) {
+    if (!self.listData || [self.listData count] == 0 || self.page-1 == 1) {
         self.listData = list;
         return;
     }
@@ -155,9 +152,6 @@
                 return nil;
             }] doNext:^(id x) {
                 @strongify(self)
-                if(self.page == 1) {
-                    self->_listData = @[];
-                }
                 self.page += 1;
             }];
         }];
@@ -187,7 +181,7 @@
     [self loadPage:1];
 }
 
-- (RACCommand *)rac_Refresh {
+- (RACCommand *)racRefresh {
     self.page = 1;
     return self.requestCommand;
 }

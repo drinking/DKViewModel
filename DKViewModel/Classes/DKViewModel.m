@@ -29,8 +29,8 @@
 }
 
 - (void)refresh {
-    [[[self.rac_Refresh executionSignals] switchToLatest] subscribe:self.refreshSubscriber];
-    [self.rac_Refresh execute:@(1)];
+    [[[self.racRefresh executionSignals] switchToLatest] subscribe:self.refreshSubscriber];
+    [self.racRefresh execute:@(1)];
 }
 
 @end
@@ -38,8 +38,8 @@
 @implementation DKViewModel (Subscription)
 
 
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             notStarted:(void (^)())notStartedBlock
+- (RACDisposable *)subscribePrePorgress:(void (^)(void))preProgressBlock
+                             notStarted:(void (^)(void))notStartedBlock
                              dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                   error:(void (^)(NSError *error))errorBlock {
     

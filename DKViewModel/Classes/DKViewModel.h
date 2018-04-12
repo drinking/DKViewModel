@@ -22,7 +22,7 @@ typedef NS_ENUM(NSUInteger, DKRequestStatus) {
 
 @property(nonatomic, strong,readonly) DKSubscriber *statusSubscriber;
 @property(nonatomic, assign) DKRequestStatus status;
-@property(nonatomic, strong) RACCommand *rac_Refresh;
+@property(nonatomic, strong) RACCommand *racRefresh;
 @property(nonatomic, strong) id response;
 
 - (void)refresh;
@@ -31,8 +31,8 @@ typedef NS_ENUM(NSUInteger, DKRequestStatus) {
 
 @interface DKViewModel (Subscription)
 
-- (RACDisposable *)subscribePrePorgress:(void (^)())preProgressBlock
-                             notStarted:(void (^)())notStartedBlock
+- (RACDisposable *)subscribePrePorgress:(void (^)(void))preProgressBlock
+                             notStarted:(void (^)(void))notStartedBlock
                              dataLoaded:(void (^)(NSArray *list,NSArray *pathsToDelete,NSArray *pathsToInsert,NSArray *pathsToMove,NSArray *destinationPaths))dataLoadedBlock
                                   error:(void (^)(NSError *error))errorBlock;
 

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		38A853BA4F629F79510DFDE5 /* Pods_DKViewModel_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF4727B8A709CEE98F9DCEF8 /* Pods_DKViewModel_Example.framework */; };
 		44D89EBE1D48A47A00BB286B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 44D89EBD1D48A47A00BB286B /* libz.tbd */; };
+		44F003EA207F3C8900EC7D91 /* DKTableViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F003E9207F3C8900EC7D91 /* DKTableViewItem.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -42,6 +43,8 @@
 		307F280F79C8014EC39B8A30 /* Pods-DKViewModel_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DKViewModel_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-DKViewModel_Example/Pods-DKViewModel_Example.release.xcconfig"; sourceTree = "<group>"; };
 		3FEEDF5D2202D2FE2486A154 /* DKViewModel.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = DKViewModel.podspec; path = ../DKViewModel.podspec; sourceTree = "<group>"; };
 		44D89EBD1D48A47A00BB286B /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		44F003E8207F3C8900EC7D91 /* DKTableViewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DKTableViewItem.h; sourceTree = "<group>"; };
+		44F003E9207F3C8900EC7D91 /* DKTableViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DKTableViewItem.m; sourceTree = "<group>"; };
 		4F34C8D1B647308C25B806EF /* Pods-DKViewModel_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DKViewModel_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DKViewModel_Example/Pods-DKViewModel_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* DKViewModel_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DKViewModel_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -141,6 +144,8 @@
 				6003F5A6195388D20070C39A /* DKViewController.m */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
+				44F003E8207F3C8900EC7D91 /* DKTableViewItem.h */,
+				44F003E9207F3C8900EC7D91 /* DKTableViewItem.m */,
 			);
 			name = "Example for DKViewModel";
 			path = DKViewModel;
@@ -323,12 +328,14 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-DKViewModel_Example/Pods-DKViewModel_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/DKViewModel/DKViewModel.framework",
+				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/ReactiveObjC/ReactiveObjC.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DKViewModel.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactiveObjC.framework",
 			);
@@ -363,6 +370,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F59E195388D20070C39A /* DKAppDelegate.m in Sources */,
+				44F003EA207F3C8900EC7D91 /* DKTableViewItem.m in Sources */,
 				6003F5A7195388D20070C39A /* DKViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 			);
