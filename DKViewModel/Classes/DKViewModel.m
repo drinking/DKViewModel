@@ -19,6 +19,7 @@
     self = [super init];
     if (self) {
         _status = DKRNotStarted;
+        _enableDiff = NO;
     }
 
     return self;
@@ -47,7 +48,7 @@
     NSCParameterAssert(notStartedBlock != NULL);
     NSCParameterAssert(dataLoadedBlock != NULL);
     NSCParameterAssert(errorBlock != NULL);
-    
+    self.enableDiff = YES;
     self.statusSubscriber = [DKSubscriber subscribeWithPrePorgress:preProgressBlock
                                                            notStarted:notStartedBlock
                                                            dataLoaded:dataLoadedBlock

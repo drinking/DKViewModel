@@ -10,4 +10,13 @@
 
 @implementation DKTableViewItem
 
+
+- (id<NSObject>)diffIdentifier {
+    return self.text;
+}
+
+- (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object {
+    return [self.text isEqualToString:(NSString *)object.diffIdentifier];
+}
+
 @end

@@ -1,0 +1,60 @@
+{
+  "name": "LJBaseViewControllerComponents",
+  "version": "0.1.7",
+  "summary": "A short description of LJBaseViewControllerComponents.",
+  "description": "An optional longer description of LJBaseViewControllerComponents",
+  "homepage": "http://git.lianjia.com/mobile_ios/Lianjia_component_BaseViewControllerComponents",
+  "license": "Lianjia",
+  "authors": {
+    "wangchao": "wangchao@lianjia.com"
+  },
+  "platforms": {
+    "ios": "7.0"
+  },
+  "source": {
+    "git": "http://git.lianjia.com/mobile_ios/Lianjia_component_BaseViewControllerComponents.git",
+    "commit": "a299da26183ee0fb753ff146fb99d57111383607"
+  },
+  "requires_arc": true,
+  "subspecs": [
+    {
+      "name": "Category",
+      "source_files": "LJBaseViewControllerComponents/LJBaseViewControllerComponents/Component/Category/*"
+    },
+    {
+      "name": "BaseViewController",
+      "source_files": "LJBaseViewControllerComponents/LJBaseViewControllerComponents/Component/BaseViewController/*",
+      "frameworks": "UIKit",
+      "dependencies": {
+        "CocoaLumberjack": [
+
+        ]
+      }
+    },
+    {
+      "name": "BaseTabbarViewController",
+      "source_files": "LJBaseViewControllerComponents/LJBaseViewControllerComponents/Component/BaseTabbarViewController/*",
+      "frameworks": "UIKit",
+      "dependencies": {
+        "LJBaseViewControllerComponents/Category": [
+
+        ]
+      }
+    },
+    {
+      "name": "BaseNavigationController",
+      "source_files": "LJBaseViewControllerComponents/LJBaseViewControllerComponents/Component/BaseNavigationController/*",
+      "frameworks": "UIKit"
+    },
+    {
+      "name": "UIHelper",
+      "source_files": "LJBaseViewControllerComponents/LJBaseViewControllerComponents/Component/UIHelper/*",
+      "frameworks": "UIKit",
+      "dependencies": {
+        "LJBaseViewControllerComponents/Category": [
+
+        ]
+      }
+    }
+  ]
+}

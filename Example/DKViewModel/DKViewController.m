@@ -128,14 +128,49 @@
     self.tableView.tableFooterView = self.textLabel;
 }
 
+#define addObj(x) item = [DKTableViewItem new]; \
+                        item.text = [NSString stringWithFormat:@"This is item %ld", (long)x]; \
+                        item.index = x; \
+                        [array addObject:item]; \
+
 - (NSArray *)createStringArray:(NSInteger)base {
+    
+    static NSInteger count = 1;
     NSMutableArray *array = [@[] mutableCopy];
-    for (NSInteger i = base; i < base + 20; ++i) {
-        DKTableViewItem *item = [DKTableViewItem new];
-        item.text = [NSString stringWithFormat:@"This is item %ld", (long)i];
-        item.index = i;
-        [array addObject:item];
+    DKTableViewItem *item;
+    if(count == 1){
+        addObj(1)
+        addObj(2)
+        addObj(3)
+        addObj(4)
+        [array addObject:array[1]];
+    }else {
+        
+        NSMutableArray *list = [self.tableViewModel.listData mutableCopy];
+        DKTableViewItem *item = list[1];
+        list[1] = list[2];
+        list[2] = item;
+        return [list copy];
+        
+//        addObj(1)
+//        addObj(3)
+//        addObj(2)
+//        addObj(2)
+//        addObj(4)
+        
     }
+    count+=1;
+    
+    
+    
+    
+//    NSMutableArray *array = [@[] mutableCopy];
+//    for (NSInteger i = base; i < base + 20; ++i) {
+//        DKTableViewItem *item = [DKTableViewItem new];
+//        item.text = [NSString stringWithFormat:@"This is item %ld", (long)10];
+//        item.index = i;
+//        [array addObject:item];
+//    }
     return [array copy];
 }
 
@@ -152,10 +187,7 @@
     } dataLoaded:^(NSArray *list, NSArray *pathsToDelete, NSArray *pathsToInsert, NSArray *pathsToMove, NSArray *destinationPaths) {
         @strongify(self)
         self.tableView.tableFooterView.frame = CGRectZero;
-        
-        if([pathsToMove count]>0){
-            
-        }
+
         
         [self.tableView beginUpdates];
         [self.tableView insertRowsAtIndexPaths:pathsToInsert withRowAnimation:UITableViewRowAnimationNone];

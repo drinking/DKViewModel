@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <IGListKit/IGListKit.h>
 
-@interface DKTableViewItem : NSObject
+@interface DKTableViewItem : NSObject<IGListDiffable>
 
 @property (nonatomic,copy) NSString *text;
 @property (nonatomic,assign) NSInteger index;

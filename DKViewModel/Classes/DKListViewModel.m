@@ -9,6 +9,11 @@
 #import "DKListViewModel.h"
 #import "DKSubscriber.h"
 
+#define DK_IG_LIST_KIT __has_include(<IGListKit/IGListDiff.h>)
+#if DK_IG_LIST_KIT
+#import <IGListKit/IGListDiff.h>
+#endif
+
 @interface DKListViewModel()
 
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
@@ -59,6 +64,12 @@
 
 - (void)setListData:(NSArray *)listData {
     
+    if(!self.enableDiff) {
+        self->_listData = listData;
+        [self.statusSubscriber sendSimpleLoaded:listData];
+        return;
+    }
+    
     if (self->_originList == nil) {
         self->_originList = self.listData?:@[];
     }else {
@@ -71,18 +82,21 @@
     @weakify(self)
     [self.operationQueue addOperationWithBlock:^{
         @strongify(self)
-        NSLog(@"background thread operating...");
+        if(!self){
+            return;
+        }
+//        NSLog(@"background thread operating...");
         RACTuple *changes = [self calculateBetweenOldArray:self->_originList newArray:listData sectionIndex:0];
         NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{
             @strongify(self)
-            if([self.listData count] != [listData count]) {
-                //校验
+            if(!self || [self.listData count] != [listData count]) {
+                //Todo??? 校验
                 return;
             }
             self->_originList = nil;
             [self.statusSubscriber sendLoadedListData:self->_listData pathsToDelete:changes.first pathsToDelete:changes.second
                                           pathsToMove:changes.third destinationPaths:changes.fourth];
-            NSLog(@"main thread operating...");
+//            NSLog(@"main thread operating...");
         }];
         
         //防止同时操作数组
@@ -100,6 +114,37 @@
 }
 
 - (RACTuple *)calculateBetweenOldArray:(NSArray *)oldObjects
+                              newArray:(NSArray *)newObjects
+                          sectionIndex:(NSInteger)section {
+#if DK_IG_LIST_KIT
+    NSObject* object = oldObjects.firstObject?:newObjects.firstObject;
+    if(![object conformsToProtocol:@protocol(IGListDiffable)]) {
+        return [self diffBetweenOldArray:oldObjects newArray:newObjects sectionIndex:section];
+    }
+    
+    IGListIndexPathResult *result = IGListDiffPaths(section,section,oldObjects,newObjects,IGListDiffPointerPersonality);
+    
+    NSMutableArray *froms = [NSMutableArray new];
+    NSMutableArray *tos = [NSMutableArray new];
+    for (IGListMoveIndexPath *path in result.moves) {
+        [froms addObject:path.from];
+        [tos addObject:path.to];
+    }
+    return RACTuplePack(result.deletes,result.inserts,froms,tos);
+#else
+    return [self diffBetweenOldArray:oldObjects newArray:newObjects sectionIndex:section];
+#endif
+
+}
+
+/*
+ Draw back: if there are more than two objects shared the same pointer,
+            it will case crash "Terminating app due to uncaught exception
+            'NSInternalInconsistencyException', reason: 'attempt to move both row at index path..."
+ 
+ */
+
+- (RACTuple *)diffBetweenOldArray:(NSArray *)oldObjects
                               newArray:(NSArray *)newObjects
                           sectionIndex:(NSInteger)section {
     

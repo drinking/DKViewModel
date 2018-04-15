@@ -1,9 +1,15 @@
 use_frameworks!
+source 'http://git.lianjia.com/mobile_ios/Lianjia_component_Podspec.git'  #我们自己的私有spec仓库的地址
+source 'https://github.com/CocoaPods/Specs.git'  #官方仓库的地址
+
 
 target 'DKViewModel_Example' do
   pod 'DKViewModel', :path => '../'
   pod 'MJRefresh', '~> 3.1.12'
   pod 'MBProgressHUD'
+  pod 'IGListKit'
+
+  pod 'LJBaseViewControllerComponents', :git => 'http://panjunqing@git.lianjia.com/mobile_ios/Lianjia_component_BaseViewControllerComponents.git'
 
   target 'DKViewModel_Tests' do
     inherit! :search_paths

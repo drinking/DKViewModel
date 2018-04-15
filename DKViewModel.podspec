@@ -39,4 +39,9 @@ TODO: Add long description of the pod here.
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'ReactiveObjC'
+
+  s.subspec 'IGListKit' do |igl|
+      igl.dependency 'IGListKit', '~> 3.0'
+  end
+
 end

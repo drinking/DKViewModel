@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, DKRequestStatus) {
 
 @property(nonatomic, strong,readonly) DKSubscriber *statusSubscriber;
 @property(nonatomic, assign) DKRequestStatus status;
+@property(nonatomic, assign) BOOL enableDiff;
 @property(nonatomic, strong) RACCommand *racRefresh;
 @property(nonatomic, strong) id response;
 
