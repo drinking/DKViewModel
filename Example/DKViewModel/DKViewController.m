@@ -70,8 +70,8 @@
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
         @strongify(self)
         [self.tableViewModel refresh];
-//        [self randomAsyncLoading];
-//        [self randomAsyncLoading];
+        [self randomAsyncLoading];
+        [self randomAsyncLoading];
 //        [self randomLoading];
     }];
     
@@ -86,7 +86,7 @@
 
 - (void)randomAsyncLoading {
     NSInteger total = 0;
-    while (total<10) {
+    while (total<100) {
         int delay = arc4random()%4;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             NSMutableArray *list = [@[] mutableCopy];
