@@ -44,20 +44,20 @@
     return self;
 }
 
-- (id <RACSubscriber>)refreshSubscriber {
+- (id <RACSubscriber>)subscriber:(void (^)())doNext {
     return [DKSubscriber subscriberWithNext:^(RACTuple *tuple) {
         NSAssert(tuple.count == 2, @"Tuple must contain two values (array,hasMore)");
+        doNext();
         [self appendListData:tuple.first];
         if ([self.listData count] == 0) {
             self.status = DKRNoData;
-        } else {
-            //tuple.last is hasMore
+        } else { //tuple.last is indicate hasMore
             self.status = [tuple.last boolValue] ? DKRDataLoaded : DKRNoMoreData;
         }
-    }                                    error:^(NSError *error) {
+    } error:^(NSError *error) {
         self.status = DKRError;
         [self.statusSubscriber sendLoadError:error];
-    }                                completed:^{
+    } completed:^{
 
     }];
 }
@@ -178,7 +178,7 @@
 }
 
 - (void)appendListData:(NSArray *)list {
-    if (!self.listData || [self.listData count] == 0 || self.page-1 == 1) {
+    if (!self.listData || [self.listData count] == 0 || self.page == 1) {
         self.listData = list;
         return;
     }
@@ -191,13 +191,10 @@
     if(self.requestBlock && !_requestCommand) {
         @weakify(self)
         _requestCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal * (NSNumber *pageNum) {
-            return [[RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
+            return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
                 @strongify(self)
                 self.requestBlock(self, subscriber, ([pageNum integerValue] - 1) * self.perPage);
                 return nil;
-            }] doNext:^(id x) {
-                @strongify(self)
-                self.page += 1;
             }];
         }];
         
@@ -209,26 +206,60 @@
     return self.requestCommand.executing;
 }
 
-- (id <RACSubscriber>)loadPageSubscriber {
-    return [self refreshSubscriber];
+- (void)refresh {
+    [self loadPage:1];
 }
 
 - (void)nextPage {
-    [[self.requestCommand execute:@(self.page)] subscribe:self.loadPageSubscriber];
+    [self loadPage:self.page+1];
 }
 
 - (void)loadPage:(NSInteger)pageNum {
-    self.page = pageNum;
-    [[self.requestCommand execute:@(pageNum)] subscribe:self.loadPageSubscriber];
-}
-
-- (void)refresh {
-    [self loadPage:1];
+    @weakify(self)
+    id subscriber = [self subscriber:^{
+        @strongify(self)
+        self.page = pageNum;
+    }];
+    [[self.requestCommand execute:@(pageNum)] subscribe:subscriber];
 }
 
 - (RACCommand *)racRefresh {
     self.page = 1;
     return self.requestCommand;
 }
+
+// MARK:Save and restore state for some situation
+
+- (void)clean {
+    self->_listData = @[];
+}
+
+- (DKListViewModelState *)saveSate {
+    DKListViewModelState *state = [DKListViewModelState new];
+    state.list = self.listData;
+    state.page = self.page;
+    state.status = self.status;
+    return state;
+}
+
+- (void)restoreState:(DKListViewModelState *)state {
+    
+    self.page = state.page;
+    self.status = state.status;
+    if([state.list count]>0) {
+        [self.statusSubscriber sendPreProcess];
+        [self clean];
+        self.listData = state.list;
+    }else if(self.status == DKRError) {
+        [self clean];
+        [self.statusSubscriber sendLoadError:nil];
+    }else { 
+        [self.statusSubscriber sendPreProcess];
+        [self clean];
+        self.listData = state.list;
+    }
+    
+}
+
 
 @end

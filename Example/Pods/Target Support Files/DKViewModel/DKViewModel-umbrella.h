@@ -11,6 +11,7 @@
 #endif
 
 #import "DKListViewModel.h"
+#import "DKListViewModelState.h"
 #import "DKSubscriber.h"
 #import "DKViewModel.h"
 #import "UIView+DKBinder.h"

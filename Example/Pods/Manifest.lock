@@ -5,10 +5,10 @@ PODS:
   - CocoaLumberjack/Default (3.4.1)
   - CocoaLumberjack/Extensions (3.4.1):
     - CocoaLumberjack/Default
-  - DKViewModel (0.2.0):
-    - DKViewModel/IGListKit (= 0.2.0)
+  - DKViewModel (0.2.1):
+    - DKViewModel/IGListKit (= 0.2.1)
     - ReactiveObjC
-  - DKViewModel/IGListKit (0.2.0):
+  - DKViewModel/IGListKit (0.2.1):
     - IGListKit (~> 3.0)
     - ReactiveObjC
   - IGListKit (3.2.0):
@@ -42,7 +42,7 @@ DEPENDENCIES:
   - MJRefresh (~> 3.1.12)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - CocoaLumberjack
     - IGListKit
     - MBProgressHUD
@@ -62,7 +62,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   CocoaLumberjack: 2e258a064cacc8eb9a2aca318e24d02a0a7fd56d
-  DKViewModel: 2825c3e8ae1945a6db3ad39b2cefb8ff8db0c9bb
+  DKViewModel: 453f1f14592329a4e67569e5fd229200caab126d
   IGListKit: ffe6f98a728ab0250aceea22e7957aa5477c5048
   LJBaseViewControllerComponents: bde922eb20f1ff21ea37ae6f5b302163ce652b43
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
@@ -71,4 +71,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6e263162294a9dbb2a75fc445a85edc4c33856af
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

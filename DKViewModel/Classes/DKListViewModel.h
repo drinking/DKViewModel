@@ -7,6 +7,7 @@
 //
 
 #import "DKViewModel.h"
+#import "DKListViewModelState.h"
 #import <ReactiveObjC/ReactiveObjC.h>
 
 @class DKListViewModel;
@@ -32,5 +33,11 @@ typedef void (^DKRequestListBlock)(DKListViewModel *instance, id <RACSubscriber>
                           sectionIndex:(NSInteger)section;
 
 + (instancetype)instanceWithRequestBlock:(DKRequestListBlock)block;
+
+- (void)clean;
+
+- (DKListViewModelState *)saveSate;
+
+- (void)restoreState:(DKListViewModelState *)state;
 
 @end
